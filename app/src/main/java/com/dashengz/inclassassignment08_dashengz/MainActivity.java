@@ -6,12 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -21,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mDatabase;
 
-    private String userUid;
+    private DatabaseReference userRef;
 
     private String TAG = "MainActivity";
 
@@ -40,8 +43,27 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    userUid = user.getUid();
-                    displayInfo();
+
+                    userRef = mDatabase.getReference(user.getUid());
+
+                    final TextView nameField = (TextView) findViewById(R.id.name_field);
+                    userRef.child("name").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            // This method is called once with the initial value and again
+                            // whenever data at this location is updated.
+                            String value = dataSnapshot.getValue(String.class);
+                            Log.d(TAG, "Value is: " + value);
+                            if (value == null) nameField.setText("Not set");
+                            else nameField.setText(value);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            // Failed to read value
+                            // Log.w(TAG, "Failed to read value.", error.toException());
+                        }
+                    });
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -66,39 +88,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void displayInfo() {
-        TextView fName = (TextView) findViewById(R.id.name_field);
-        TextView fAge = (TextView) findViewById(R.id.age_field);
-        TextView fGender = (TextView) findViewById(R.id.gender_field);
-
-        updateField(fName, "name");
-        updateField(fAge, "age");
-        updateField(fGender, "gender");
-    }
-
-    public void updateField(final TextView field, String key) {
-
-        mDatabase.getReference(userUid).child(key).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);
-                if (value == null) field.setText("Not set");
-                else field.setText(value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                // Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-    }
-
     public void update(View view) {
-        startActivity(new Intent(this, EditActivity.class));
+        EditText name = (EditText) findViewById(R.id.name_new);
+        userRef.child("name").setValue(name.getText().toString());
+        Toast.makeText(this, "Name updated!", Toast.LENGTH_SHORT).show();
+        name.setText("");
     }
 
     public void logout(View view) {
