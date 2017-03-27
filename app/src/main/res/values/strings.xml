@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Firebase User App</string>
+    <string name="login_activity_label">Login</string>
+    <string name="edit_activity_label">Edit Profile</string>
+</resources>
