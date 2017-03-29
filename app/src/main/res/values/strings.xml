@@ -2,4 +2,6 @@
     <string name="app_name">Firebase User App</string>
     <string name="login_activity_label">Login</string>
     <string name="edit_activity_label">Edit Profile</string>
+
+    <string name="logout_label">Log Out</string>
 </resources>

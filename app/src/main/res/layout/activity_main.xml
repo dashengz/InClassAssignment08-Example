@@ -54,11 +54,4 @@
         android:onClick="update"
         android:text="Update Name" />
 
-    <Button
-        android:id="@+id/logout_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="logout"
-        android:text="Log Out" />
-
 </LinearLayout>
