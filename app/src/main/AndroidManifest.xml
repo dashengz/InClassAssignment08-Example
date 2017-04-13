@@ -21,7 +21,8 @@
             android:label="@string/login_activity_label" />
         <activity
             android:name=".EditActivity"
-            android:label="@string/edit_activity_label" />
+            android:label="@string/edit_activity_label"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>
